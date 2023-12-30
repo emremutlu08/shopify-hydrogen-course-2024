@@ -347,6 +347,9 @@ const PRODUCT_VARIANT_FRAGMENT = `#graphql
     product {
       title
       handle
+      giftProduct: metafield(namespace: "custom", key: "gift") {
+            value
+          }
     }
     selectedOptions {
       name

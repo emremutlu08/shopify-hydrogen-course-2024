@@ -217,6 +217,9 @@ const CART_QUERY_FRAGMENT = `#graphql
           handle
           title
           id
+          giftProduct: metafield(namespace: "custom", key: "gift") {
+            value
+          }
         }
         selectedOptions {
           name
