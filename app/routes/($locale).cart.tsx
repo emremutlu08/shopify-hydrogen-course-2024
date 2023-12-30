@@ -13,12 +13,19 @@ export const meta: MetaFunction = () => {
 export async function action({request, context}: ActionFunctionArgs) {
   const {session, cart} = context;
 
+  const currentCart = await cart.get();
+
   const [formData, customerAccessToken] = await Promise.all([
     request.formData(),
     session.get('customerAccessToken'),
   ]);
 
   const {action, inputs} = CartForm.getFormInput(formData);
+  console.log(JSON.stringify(currentCart, null, 2), 'currentCart');
+  const item = currentCart?.lines?.nodes?.find(
+    (el) => el?.id === (inputs?.lines?.[0]?.id || inputs?.lineIds?.[0]),
+  );
+  console.log(JSON.stringify(item, null, 2), 'item');
 
   if (!action) {
     throw new Error('No action provided');
@@ -27,6 +34,28 @@ export async function action({request, context}: ActionFunctionArgs) {
   let status = 200;
   let result: CartQueryData;
   console.log(JSON.stringify(inputs.lines, null, 2), 'inputs.lines');
+
+  const giftProduct = item?.merchandise?.product?.giftProduct?.value;
+
+  console.log(giftProduct, 'giftProduct');
+
+  if (giftProduct) {
+    if (inputs?.lines) {
+      console.log('update gift');
+      const updatedQuantity =
+        Number(inputs?.['decrease-quantity']) - 1 ||
+        Number(inputs?.['increase-quantity']) + 1;
+      inputs.lines[0].quantity = updatedQuantity;
+    } else {
+      console.log('remove gift');
+      const removeThose = currentCart?.lines?.nodes?.filter(
+        (el) => el?.merchandise?.product?.giftProduct?.value === giftProduct,
+      );
+      const removeThoseIds = removeThose?.map((el) => el?.id);
+      inputs.lineIds = removeThoseIds;
+    }
+  }
+
   switch (action) {
     case CartForm.ACTIONS.LinesAdd:
       result = await cart.addLines(inputs.lines);
