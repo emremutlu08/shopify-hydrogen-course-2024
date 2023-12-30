@@ -26,7 +26,7 @@ export async function action({request, context}: ActionFunctionArgs) {
 
   let status = 200;
   let result: CartQueryData;
-
+  console.log(JSON.stringify(inputs.lines, null, 2), 'inputs.lines');
   switch (action) {
     case CartForm.ACTIONS.LinesAdd:
       result = await cart.addLines(inputs.lines);

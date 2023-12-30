@@ -240,7 +240,7 @@ const CUSTOMER_ORDER_QUERY = `#graphql
     }
     product {
       handle
-      giftProduct: metafield(namespace: "custom", key: "gift") {
+      giftProduct: metafield(namespace: "custom", key: "giftproduct") {
             value
           }
     }

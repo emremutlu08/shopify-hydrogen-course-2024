@@ -228,6 +228,28 @@ function ProductForm({
   selectedVariant: ProductFragment['selectedVariant'];
   variants: Array<ProductVariantFragment>;
 }) {
+  const giftedArray = selectedVariant
+    ? selectedVariant?.product?.giftProduct?.value
+      ? [
+          {
+            merchandiseId: selectedVariant.id,
+            quantity: 1,
+          },
+          {
+            merchandiseId: selectedVariant?.product?.giftProduct?.value,
+            quantity: 1,
+          },
+        ]
+      : [
+          {
+            merchandiseId: selectedVariant.id,
+            quantity: 1,
+          },
+        ]
+    : [];
+
+  const addToCartArray = selectedVariant ? giftedArray : [];
+
   return (
     <div className="product-form">
       <VariantSelector
@@ -243,16 +265,7 @@ function ProductForm({
         onClick={() => {
           window.location.href = window.location.href + '#cart-aside';
         }}
-        lines={
-          selectedVariant
-            ? [
-                {
-                  merchandiseId: selectedVariant.id,
-                  quantity: 1,
-                },
-              ]
-            : []
-        }
+        lines={addToCartArray}
       >
         {selectedVariant?.availableForSale ? 'Add to cart' : 'Sold out'}
       </AddToCartButton>
@@ -347,7 +360,7 @@ const PRODUCT_VARIANT_FRAGMENT = `#graphql
     product {
       title
       handle
-      giftProduct: metafield(namespace: "custom", key: "gift") {
+      giftProduct: metafield(namespace: "custom", key: "giftproduct") {
             value
           }
     }
