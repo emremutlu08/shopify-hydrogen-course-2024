@@ -182,6 +182,14 @@ const CART_QUERY_FRAGMENT = `#graphql
       key
       value
     }
+    discountAllocations{
+      ... on CartAutomaticDiscountAllocation {
+        title
+        discountedAmount {
+          ...Money
+        }
+      }
+    }
     cost {
       totalAmount {
         ...Money

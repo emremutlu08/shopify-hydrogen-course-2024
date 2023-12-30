@@ -75,6 +75,7 @@ function CartLineItem({
 
   const isFree = Number(line?.cost?.totalAmount?.amount) === 0;
 
+  console.log(line, 'line');
   return (
     <li key={id} className="cart-line">
       {image && (
@@ -103,15 +104,29 @@ function CartLineItem({
             <strong>{product.title}</strong>
           </p>
         </Link>
-        <CartLinePrice line={line} as="span" />
+        {isFree ? 'Free!' : <CartLinePrice line={line} as="span" />}
         <ul>
-          {selectedOptions.map((option) => (
-            <li key={option.name}>
-              <small>
-                {option.name}: {option.value}
-              </small>
-            </li>
-          ))}
+          {isFree
+            ? (line?.discountAllocations || [])?.map((discount) => {
+                if (Number(discount?.discountedAmount?.amount) === 0)
+                  return null;
+
+                return (
+                  <li key={discount?.title}>
+                    <small className="flex">
+                      {discount?.title}: -{' '}
+                      <Money data={discount?.discountedAmount} />
+                    </small>
+                  </li>
+                );
+              })
+            : selectedOptions.map((option) => (
+                <li key={option.name}>
+                  <small>
+                    {option.name}: {option.value}
+                  </small>
+                </li>
+              ))}
         </ul>
         <CartLineQuantity line={line} isUnchangeable={isFree} />
       </div>
