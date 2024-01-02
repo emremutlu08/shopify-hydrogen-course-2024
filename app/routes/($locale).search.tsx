@@ -13,6 +13,8 @@ export async function loader({request, context}: LoaderFunctionArgs) {
   const searchParams = new URLSearchParams(url.search);
   const variables = getPaginationVariables(request, {pageBy: 8});
   const searchTerm = String(searchParams.get('q') || '');
+  const min = Number(searchParams.get('min') || 0);
+  const max = Number(searchParams.get('max') || 9999);
 
   if (!searchTerm) {
     return {
@@ -24,6 +26,12 @@ export async function loader({request, context}: LoaderFunctionArgs) {
   const data = await context.storefront.query(SEARCH_QUERY, {
     variables: {
       query: searchTerm,
+      productFilters: {
+        price: {
+          min,
+          max,
+        },
+      },
       ...variables,
     },
   });
@@ -122,6 +130,7 @@ const SEARCH_QUERY = `#graphql
     $last: Int
     $query: String!
     $startCursor: String
+    $productFilters: [ProductFilter!]
   ) @inContext(country: $country, language: $language) {
     products: search(
       query: $query,
@@ -132,6 +141,7 @@ const SEARCH_QUERY = `#graphql
       last: $last,
       before: $startCursor,
       after: $endCursor
+      productFilters: $productFilters
     ) {
       nodes {
         ...on Product {

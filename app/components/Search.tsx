@@ -96,6 +96,18 @@ export function SearchForm({searchTerm}: {searchTerm: string}) {
         ref={inputRef}
         type="search"
       />
+      <input
+        defaultValue={0}
+        name="min"
+        placeholder="Min Price"
+        type="number"
+      />
+      <input
+        defaultValue={9999}
+        name="max"
+        placeholder="Max Price"
+        type="number"
+      />
       &nbsp;
       <button type="submit">Search</button>
     </Form>
